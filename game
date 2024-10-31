@@ -1,0 +1,82 @@
+#!/usr/bin/env node
+
+
+
+const process = require("node:process"); // If using ESM
+const {emitKeypressEvents} = require("readline");
+
+// process.stdin.setRawMode(true);
+
+// emitKeypressEvents(process.stdin);
+
+
+
+
+
+const state = {
+	x: 0,
+	y: 0,
+	targetX: 9,
+	targetY: 9
+
+}
+
+setupTerminal();
+
+
+process.stdin.on("keypress", function (_, key){
+	// console.log(key)
+	if (key.name === 'q') {
+		gameOver();
+		return
+	} 
+	if (key.name === 'right') {
+		state.x++
+	}
+	if (key.name === 'left') {
+		state.x--
+	}
+	if (key.name === 'up') {
+		state.y--
+	}
+	if (key.name === 'down') {
+		state.y++
+	}
+	render();
+})
+
+render();
+
+function render () {
+	// process.stdout.clearScreenDown();
+	console.clear()	
+	process.stdout.cursorTo(state.x, state.y);
+	process.stdout.write('X')
+
+
+	process.stdout.cursorTo(state.targetX, state.targetY);
+	process.stdout.write('0')
+}
+
+
+function setupTerminal() {
+	emitKeypressEvents(process.stdin);
+	process.stdin.setRawMode(true)
+
+
+	// use new terminal 
+	process.stdout.write('\x1b[?1049h');
+
+	// hide cursorTo
+	process.stdout.write('\x1B[?25l');
+}
+
+
+function gameOver () {
+	process.stdout.write("\x1b[?10491");
+	process.stdout.write("\x1B[?25h");
+	process.exit()
+}
+
+//console.log("Welcome to the Game");
+//process.stdout.write("I am from process");
